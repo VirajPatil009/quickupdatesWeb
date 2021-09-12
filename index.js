@@ -23,6 +23,7 @@ const getNextReviews = async (doc) => {
         <h2>Title ${post.title}</h2>
         <p>Content ${post.content}</p>
         <p>Tab ${post.topic}</p>
+        <input type="button" title="Approve">
       </div>
     `;
   });

@@ -1,0 +1,40 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firestore Pagination</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="container"></div>
+  <div class="loading">loading data...</div>
+
+  <div class="load-more">
+    <button>Load More</button>
+  </div>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.24.0/firebase-firestore.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyCZU0T05oBapAuo1-Rsplm3Ra2vAxqJS8w",
+  authDomain: "quickupdates-8b6da.firebaseapp.com",
+  databaseURL:
+    "https://quickupdates-8b6da-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "quickupdates-8b6da",
+  storageBucket: "quickupdates-8b6da.appspot.com",
+  messagingSenderId: "248347257732",
+  appId: "1:248347257732:web:3f4f62175b304a5f43cbd1",
+  measurementId: "G-TQYHDDY92Q",
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+  <script src="index.js"></script>
+</body>
+</html>

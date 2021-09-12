@@ -1,63 +1,111 @@
-const container = document.querySelector(".container");
-const loading = document.querySelector(".loading");
+$(function () {
+  const container = document.querySelector(".container");
+  const loading = document.querySelector(".loading");
 
-// store last document retrieved
-let latestDoc = null;
+  // store last document retrieved
+  let latestDoc = null;
 
-const getNextReviews = async (doc) => {
-  loading.classList.add("active");
+  const getNextReviews = async (doc) => {
+    loading.classList.add("active");
 
-  const ref = db
-    .collection("Posts")
-    .orderBy("createdAt")
-    .startAfter(doc || 0)
-    .limit(6);
-  const data = await ref.get();
+    const ref = db
+      .collection("Posts")
+      //  .where("approved", "==", true)
+      .orderBy("createdAt")
+      .startAfter(doc || 0)
+      .limit(6)
+      .onSnapshot({
+        next: (data) => {
+          //const data = await ref.get();
 
-  // output docs
-  let template = "";
-  data.docs.forEach((doc) => {
-    const post = doc.data();
-    template += `
+          // output docs
+          let template = "";
+          data.forEach((doc) => {
+            const post = doc.data();
+            template += `
       <div class="card">
-        <h2>Title ${post.title}</h2>
-        <p>Content ${post.content}</p>
-        <p>Tab ${post.topic}</p>
-        <input type="button" title="Approve">
+        <h4>Title : ${post.title}</h4>
+        <p>Content : ${post.content}</p>
+        <p>Tab : ${post.topic == 1 ? "Story" : "Jokes"}</p>
+        ${
+          post.approved
+            ? `<button id="approved" data-button=${doc.id} >Approved</input>`
+            : `<button id="approve" data-button=${doc.id} >Approve</input>`
+        }</p>
+      
+        <button id="delete" data-button=${doc.id} >Delete</input>
       </div>
     `;
-  });
-  container.innerHTML += template;
-  loading.classList.remove("active");
+          });
 
-  // update latest doc
-  latestDoc = data.docs[data.docs.length - 1];
+          container.innerHTML += template;
+          loading.classList.remove("active");
 
-  // unattach event listeners if no more docs
-  if (data.empty) {
-    loadMore.removeEventListener("click", handleClick);
-    container.removeEventListener("scroll", handleScroll);
-  }
-};
+          // update latest doc
+          latestDoc = data.docs[data.docs.length - 1];
 
-// load data on DOM loaded
-window.addEventListener("DOMContentLoaded", () => getNextReviews());
+          // unattach event listeners if no more docs
+          if (data.empty) {
+            loadMore.removeEventListener("click", handleClick);
+            container.removeEventListener("scroll", handleScroll);
+          }
+        },
+      });
+  };
 
-// load more docs (button)
-const loadMore = document.querySelector(".load-more button");
+  // load data on DOM loaded
+  window.addEventListener("DOMContentLoaded", () => getNextReviews());
 
-const handleClick = () => {
-  getNextReviews(latestDoc);
-};
+  // load more docs (button)
+  const loadMore = document.querySelector(".load-more button");
 
-loadMore.addEventListener("click", handleClick);
-
-// load more books (scroll)
-const handleScroll = () => {
-  let triggerHeight = container.scrollTop + container.offsetHeight;
-  if (triggerHeight >= container.scrollHeight) {
+  const handleClick = () => {
     getNextReviews(latestDoc);
-  }
-};
+  };
 
-container.addEventListener("scroll", handleScroll);
+  loadMore.addEventListener("click", handleClick);
+
+  // load more books (scroll)
+  const handleScroll = () => {
+    let triggerHeight = container.scrollTop + container.offsetHeight;
+    if (triggerHeight >= container.scrollHeight) {
+      getNextReviews(latestDoc);
+    }
+  };
+  container.addEventListener("scroll", handleScroll);
+});
+
+$(".container").on("click", "#approve", function () {
+  var docId = $(this).attr("data-button");
+
+  // alert(docId);
+  db.collection("Posts")
+    .doc(docId)
+    .set(
+      {
+        approved: true,
+      },
+      { merge: true }
+    )
+    .then(() => {
+      alert("Post Approved");
+      location.reload();
+    });
+});
+
+$(".container").on("click", "#delete", function () {
+  var docId = $(this).attr("data-button");
+  //alert(docId);
+  if (confirm("Are you sure you want to delete this post?")) {
+    db.collection("Posts")
+      .doc(docId)
+      .delete()
+      .then(() => {
+        alert("Post Deleted!");
+        location.reload();
+      })
+      .catch((error) => {
+        console.log("Error Deleting Post", error);
+      });
+  }
+});

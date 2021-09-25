@@ -20,20 +20,25 @@ $(function () {
 
           // output docs
           let template = "";
+
           data.forEach((doc) => {
             const post = doc.data();
             template += `
       <div class="card">
-        <h4>Title : ${post.title}</h4>
+        <h4>Title : ${post.title}</h4><p>${post.createdAt
+              .toDate()
+              .toDateString()}</p>
         <p>Content : ${post.content}</p>
         <p>Tab : ${post.topic == 1 ? "Story" : "Jokes"}</p>
         ${
           post.approved
-            ? `<button id="approved" data-button=${doc.id} >Approved</input>`
-            : `<button id="approve" data-button=${doc.id} >Approve</input>`
+            ? `<button id="approved" class="btn btn-success" data-button=${doc.id} >Approved</input>`
+            : `<button id="approve" class="btn btn-warning" data-button=${doc.id} >Approve</input>`
         }</p>
       
-        <button id="delete" data-button=${doc.id} >Delete</input>
+        <button id="delete" class="btn btn-danger" data-button=${
+          doc.id
+        } >Delete</input>
       </div>
     `;
           });
@@ -108,4 +113,19 @@ $(".container").on("click", "#delete", function () {
         console.log("Error Deleting Post", error);
       });
   }
+});
+$("#myModal").on("click", "#submitPost", function () {
+  // alert("asd");
+  db.collection("Posts")
+    .add({
+      title: $("#postTitle").val(),
+      content: $("#postContent").val(),
+      topic: $("#postTopic :selected").val(),
+      createdAt: new Date(),
+      approved: false,
+    })
+    .then(() => {
+      alert("Post Added Successfully!!!");
+      location.reload();
+    });
 });

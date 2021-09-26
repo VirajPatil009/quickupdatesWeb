@@ -9,11 +9,17 @@ $(function () {
     loading.classList.add("active");
 
     const ref = db
+      // .collection("Posts")
+      // //  .where("approved", "==", true)
+      // .orderBy("createdAt")
+      // .startAfter(doc || 0)
+      // .limit(6)
       .collection("Posts")
-      //  .where("approved", "==", true)
-      .orderBy("createdAt")
-      .startAfter(doc || 0)
-      .limit(6)
+      // .where("topic", "==", "2")
+      //.where("approved", "==", true)
+      // .limit(5)
+      .orderBy("createdAt", "desc")
+
       .onSnapshot({
         next: (data) => {
           //const data = await ref.get();

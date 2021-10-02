@@ -35,11 +35,15 @@ $(function () {
               .toDate()
               .toDateString()}</p>
         <p>Content : ${post.content}</p>
-        <p>Tab : ${post.topic == 1 ? "Story" : "Jokes"}</p>
+        <p>Tab : ${(() => {
+          if (post.topic == 1) return "Story";
+          if (post.topic == 2) return "Jokes";
+          if (post.topic == 3) return "Riddle";
+        })()}</p>
         ${
           post.approved
-            ? `<button id="approved" class="btn btn-success" data-button=${doc.id} >Approved</input>`
-            : `<button id="approve" class="btn btn-warning" data-button=${doc.id} >Approve</input>`
+            ? `<button id="approved" class="btn btn-success" data-button=${doc.id} >Unpublish</input>`
+            : `<button id="approve" class="btn btn-warning" data-button=${doc.id} >Publish</input>`
         }</p>
       
         <button id="delete" class="btn btn-danger" data-button=${
@@ -95,11 +99,28 @@ $(".container").on("click", "#approve", function () {
     .set(
       {
         approved: true,
+        approvedAt: new Date(),
       },
       { merge: true }
     )
     .then(() => {
       alert("Post Approved");
+      location.reload();
+    });
+});
+$(".container").on("click", "#approved", function () {
+  var docId = $(this).attr("data-button");
+  db.collection("Posts")
+    .doc(docId)
+    .set(
+      {
+        approved: false,
+        approvedAt: new Date(),
+      },
+      { merge: true }
+    )
+    .then(() => {
+      alert("Post Unpublished");
       location.reload();
     });
 });
